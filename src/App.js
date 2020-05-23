@@ -5,6 +5,7 @@ import './App.css';
 import GameMap from './components/GameMap';
 
 const store = createStore((state = {}) => state);
+//changes right here
 
 function App() {
   return (
