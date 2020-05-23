@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
-import './style.css';
-import { createMap } from '../../engine/mapRenderer';
 import Checker from '../Checker';
-
-const WHITE_CHECKER = '0';
-const BLACK_CHECKER = 'x';
-const KING = 'M';
+import { createMap, createActivePath, move } from '../../engine/mapRenderer';
+import { BLACK_CHECKER, KING, WHITE_CHECKER, SEPARATOR, EMPTY_CELL } from '../../engine/types';
+import { START_MOVE, SELECTED_CHECKER } from '../../engine/phases';
+import './style.css';
 
 const Element = ({ symbol, isActive, ...props }) => {
   switch (symbol) {
@@ -21,61 +19,84 @@ const Element = ({ symbol, isActive, ...props }) => {
   }
 };
 
-const createActivePath = ({ map, activeIndex }) => {
-  const path = new Set();
-
-  if (activeIndex[0] === null || activeIndex[1] === null) {
-    return path;
-  }
-
-  // Down
-  for (let i = activeIndex[0] + 1; i < map.length; i++) {
-    path.add(`${i}_${activeIndex[1]}`);
-  }
-
-  // Up
-  for (let i = activeIndex[0] - 1; i >= 0; i--) {
-    path.add(`${i}_${activeIndex[1]}`);
-  }
-
-  // Right
-  for (let i = activeIndex[1] + 1; i < map[0].length; i++) {
-    path.add(`${activeIndex[0]}_${i}`);
-  }
-
-  // Left
-  for (let i = activeIndex[1] - 1; i >= 0; i--) {
-    path.add(`${activeIndex[0]}_${i}`);
-  }
-
-  return path;
-};
-
 const GameMap = ({ width, height }) => {
-  const map = createMap({ width, height });
+  const [map, setMap] = useState(createMap({ width, height }));
   const [activeIndex, setActiveIndex] = useState([null, null]);
+  const [phase, setPhase] = useState(START_MOVE);
+  const [moveCounter, setMoveCounter] = useState(0);
+  const [moveTurn, setMoveTurn] = useState(WHITE_CHECKER);
+
   const activePath = createActivePath({ map, activeIndex });
   const isActive = ([i, j]) => (
-    (activeIndex[0] === i && activeIndex[1] === j) || (activePath.has(`${i}_${j}`))
+    (activeIndex[0] === i && activeIndex[1] === j) || activePath.has(`${i}${SEPARATOR}${j}`)
   );
+  const onClickHandler = ([i, j]) => {
+    // When clicked on an active checker - reset selection and go to the START_MOVE stage.
+    if (activeIndex[0] === i && activeIndex[1] === j) {
+      setPhase(START_MOVE);
+      setActiveIndex([null, null]);
 
-  console.log(activePath);
+      return;
+    }
+
+    const destination = map[i][j];
+
+    // Ignore clicks on empty cells
+    if (destination === EMPTY_CELL && phase === START_MOVE) {
+      return;
+    }
+
+    // Attempt to move.
+    if (destination === EMPTY_CELL && phase === SELECTED_CHECKER) {
+      // If destination is not withing the allowed active path - do nothing.
+      if (activePath.has(`${i}${SEPARATOR}${j}`) === false) {
+        return;
+      }
+
+      const newMap = move({ map, from: activeIndex, to: [i, j] });
+
+      setPhase(START_MOVE);
+      setMap(newMap);
+      setActiveIndex([null, null]);
+      setMoveCounter(moveCounter + 1);
+      setMoveTurn(moveTurn === BLACK_CHECKER ? WHITE_CHECKER : BLACK_CHECKER);
+
+      return;
+    }
+
+    // If a checker is selected not in the correct move turn.
+    if (moveTurn !== destination) {
+      return;
+    }
+
+    setPhase(SELECTED_CHECKER);
+    setActiveIndex([i, j]);
+  };
 
   return (
-    <div className="map">
-      {map.map((row, i) => (
-        <div className="row" key={i}>
-          {row.map((symbol, j) => (
-            <div className={'cell' + (isActive([i, j]) ? ' active' : '')} key={j}>
-              <Element
-                symbol={symbol}
-                isActive={isActive([i, j])}
-                onClick={() => setActiveIndex([i, j])}
-              />
-            </div>
-          ))}
-        </div>
-      ))}
+    <div className="main-container">
+      <div>
+        <div>Move #{moveCounter + 1}</div>
+        <div>Turn: {moveTurn === WHITE_CHECKER ? 'White' : 'Black'}</div>
+      </div>
+      <div className="map">
+        {map.map((row, i) => (
+          <div className="row" key={i}>
+            {row.map((symbol, j) => (
+              <div
+                onClick={() => onClickHandler([i, j])}
+                className={'cell' + (isActive([i, j]) ? ' active' : '')}
+                key={j}
+              >
+                <Element
+                  symbol={symbol}
+                  isActive={isActive([i, j])}
+                />
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
