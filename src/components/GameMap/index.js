@@ -80,10 +80,7 @@ const GameMap = ({
                 className={'cell' + (isActive([i, j]) ? ' active' : '')}
                 key={j}
               >
-                <CellElement
-                  symbol={symbol}
-                  isActive={isActive([i, j])}
-                />
+                <CellElement symbol={symbol} isActive={isActive([i, j])} />
               </div>
             ))}
           </div>
