@@ -1,40 +1,39 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
-import Checker from '../Checker';
-import { createMap, createActivePath, move } from '../../engine/mapRenderer';
-import { BLACK_CHECKER, KING, WHITE_CHECKER, SEPARATOR, EMPTY_CELL } from '../../engine/types';
+import { createActivePath, move } from '../../engine/mapRenderer';
+import { WHITE_CHECKER, SEPARATOR, EMPTY_CELL } from '../../engine/types';
 import { START_MOVE, SELECTED_CHECKER } from '../../engine/phases';
 import './style.css';
+import CellElement from '../CellElement';
+import {
+  nextPhase,
+  startPhase,
+  clearActiveIndex,
+  setActiveIndex,
+  incrementMoves,
+  nextMoveTurn,
+  setMap,
+  setActivePath,
+} from '../../store/actions';
 
-const Element = ({ symbol, isActive, ...props }) => {
-  switch (symbol) {
-    case WHITE_CHECKER:
-      return <Checker className="white-checker" isActive={isActive} {...props} />;
-    case BLACK_CHECKER:
-      return <Checker className="black-checker" isActive={isActive} {...props} />;
-    case KING:
-      return <Checker className="king-checker" isActive={isActive} {...props} />;
-    default:
-      return null;
-  }
-};
-
-const GameMap = ({ width, height }) => {
-  const [map, setMap] = useState(createMap({ width, height }));
-  const [activeIndex, setActiveIndex] = useState([null, null]);
-  const [phase, setPhase] = useState(START_MOVE);
-  const [moveCounter, setMoveCounter] = useState(0);
-  const [moveTurn, setMoveTurn] = useState(WHITE_CHECKER);
-
-  const activePath = createActivePath({ map, activeIndex });
+const GameMap = ({
+  phase,
+  activeIndex,
+  moveCounter,
+  moveTurn,
+  map,
+  activePath,
+  toStartMove,
+  makeMove,
+  selectChecker,
+}) => {
   const isActive = ([i, j]) => (
     (activeIndex[0] === i && activeIndex[1] === j) || activePath.has(`${i}${SEPARATOR}${j}`)
   );
   const onClickHandler = ([i, j]) => {
     // When clicked on an active checker - reset selection and go to the START_MOVE stage.
     if (activeIndex[0] === i && activeIndex[1] === j) {
-      setPhase(START_MOVE);
-      setActiveIndex([null, null]);
+      toStartMove();
 
       return;
     }
@@ -53,13 +52,7 @@ const GameMap = ({ width, height }) => {
         return;
       }
 
-      const newMap = move({ map, from: activeIndex, to: [i, j] });
-
-      setPhase(START_MOVE);
-      setMap(newMap);
-      setActiveIndex([null, null]);
-      setMoveCounter(moveCounter + 1);
-      setMoveTurn(moveTurn === BLACK_CHECKER ? WHITE_CHECKER : BLACK_CHECKER);
+      makeMove({ map, from: activeIndex, to: [i, j] });
 
       return;
     }
@@ -69,8 +62,7 @@ const GameMap = ({ width, height }) => {
       return;
     }
 
-    setPhase(SELECTED_CHECKER);
-    setActiveIndex([i, j]);
+    selectChecker({ map, activeIndex: [i, j] });
   };
 
   return (
@@ -88,7 +80,7 @@ const GameMap = ({ width, height }) => {
                 className={'cell' + (isActive([i, j]) ? ' active' : '')}
                 key={j}
               >
-                <Element
+                <CellElement
                   symbol={symbol}
                   isActive={isActive([i, j])}
                 />
@@ -101,4 +93,47 @@ const GameMap = ({ width, height }) => {
   );
 };
 
-export default connect(state => ({ state }))(GameMap);
+const mapStateToProps = ({ phase, activeIndex, moveCounter, moveTurn, map, activePath }) => ({
+  phase,
+  activeIndex,
+  moveCounter,
+  moveTurn,
+  map,
+  activePath,
+});
+const mapDispatchToProps = (dispatch) => ({
+  toStartMove: (payload) => {
+    dispatch(startPhase());
+    dispatch(clearActiveIndex());
+    dispatch(
+      setActivePath(
+        createActivePath({ map: payload, activeIndex: [null, null] })
+      )
+    );
+  },
+  makeMove: ({ map, from, to }) => {
+    const newMap = move({ map, from, to });
+
+    dispatch(startPhase());
+    dispatch(setMap(newMap));
+    dispatch(clearActiveIndex());
+    dispatch(incrementMoves());
+    dispatch(nextMoveTurn());
+    dispatch(
+      setActivePath(
+        createActivePath({ map: newMap, activeIndex: [null, null] })
+      )
+    );
+  },
+  selectChecker: ({ map, activeIndex }) => {
+    dispatch(nextPhase());
+    dispatch(setActiveIndex(activeIndex));
+    dispatch(
+      setActivePath(
+        createActivePath({ map, activeIndex })
+      )
+    );
+  }
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(GameMap);
