@@ -24,6 +24,7 @@ const GameMap = ({
   map,
   activePath,
   toStartMove,
+  reselectChecker,
   makeMove,
   selectChecker,
 }) => {
@@ -62,9 +63,16 @@ const GameMap = ({
       return;
     }
 
+    // If another checker is reselected in the correct move turn.
+    if (moveTurn === destination && phase === SELECTED_CHECKER) {
+      reselectChecker({ map, activeIndex: [i, j] });
+      
+      return;
+    }
+
     selectChecker({ map, activeIndex: [i, j] });
   };
-
+  
   return (
     <div className="main-container">
       <div>
@@ -105,6 +113,14 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(
       setActivePath(
         createActivePath({ map: payload, activeIndex: [null, null] })
+      )
+    );
+  },
+  reselectChecker: ({ map, activeIndex }) => {
+    dispatch(setActiveIndex(activeIndex));
+    dispatch(
+      setActivePath(
+        createActivePath({ map, activeIndex })
       )
     );
   },
