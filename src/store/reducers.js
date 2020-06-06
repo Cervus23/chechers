@@ -8,7 +8,7 @@ import {
   START_PHASE
 } from './actions';
 import { START_MOVE, PHASES } from '../engine/phases';
-import { WHITE_CHECKER, BLACK_CHECKER } from '../engine/types';
+import { WHITE, BLACK } from '../engine/turns';
 import { createMap } from '../engine/mapRenderer';
 
 const mapParams = {
@@ -20,7 +20,7 @@ const initialState = {
   phase: START_MOVE,
   activeIndex: [null, null],
   moveCounter: 0,
-  moveTurn: WHITE_CHECKER,
+  moveTurn: WHITE,
   map: createMap(mapParams),
   activePath: new Set(),
 };
@@ -41,7 +41,7 @@ const reducer = (state = initialState, { type, payload }) => {
     case INCREMENT_MOVES:
       return { ...state, moveCounter: state.moveCounter + 1 };
     case NEXT_TURN:
-      return { ...state, moveTurn: state.moveTurn === BLACK_CHECKER ? WHITE_CHECKER : BLACK_CHECKER };
+      return { ...state, moveTurn: state.moveTurn === BLACK ? WHITE : BLACK };
     case SET_MAP:
       return { ...state, map: payload };
     case SET_ACTIVE_PATH:

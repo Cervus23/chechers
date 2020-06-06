@@ -1,7 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { createActivePath, move } from '../../engine/mapRenderer';
-import { WHITE_CHECKER, SEPARATOR, EMPTY_CELL } from '../../engine/types';
+import { SEPARATOR, EMPTY_CELL, KING, WHITE_CHECKER, BLACK_CHECKER } from '../../engine/types';
+import { WHITE, BLACK } from '../../engine/turns'
 import { START_MOVE, SELECTED_CHECKER } from '../../engine/phases';
 import './style.css';
 import CellElement from '../CellElement';
@@ -39,15 +40,32 @@ const GameMap = ({
       return;
     }
 
-    const destination = map[i][j];
+    const destination = {
+      type: map[i][j],
+      side: null,
+    };
+
+    switch (map[i][j]) {
+      case WHITE_CHECKER:
+        destination.side = WHITE;
+        break;
+      case KING:
+        destination.side = WHITE;
+        break;
+      case BLACK_CHECKER:
+        destination.side = BLACK;
+        break;
+      default:
+        destination.side = null;
+    }
 
     // Ignore clicks on empty cells
-    if (destination === EMPTY_CELL && phase === START_MOVE) {
+    if (destination.type === EMPTY_CELL && phase === START_MOVE) {
       return;
     }
 
     // Attempt to move.
-    if (destination === EMPTY_CELL && phase === SELECTED_CHECKER) {
+    if (destination.type === EMPTY_CELL && phase === SELECTED_CHECKER) {
       // If destination is not withing the allowed active path - do nothing.
       if (activePath.has(`${i}${SEPARATOR}${j}`) === false) {
         return;
@@ -59,12 +77,12 @@ const GameMap = ({
     }
 
     // If a checker is selected not in the correct move turn.
-    if (moveTurn !== destination) {
+    if (moveTurn !== destination.side) {
       return;
     }
 
     // If another checker is reselected in the correct move turn.
-    if (moveTurn === destination && phase === SELECTED_CHECKER) {
+    if (moveTurn === destination.side && phase === SELECTED_CHECKER) {
       reselectChecker({ map, activeIndex: [i, j] });
       
       return;
@@ -72,12 +90,12 @@ const GameMap = ({
 
     selectChecker({ map, activeIndex: [i, j] });
   };
-  
+
   return (
     <div className="main-container">
       <div>
         <div>Move #{moveCounter + 1}</div>
-        <div>Turn: {moveTurn === WHITE_CHECKER ? 'White' : 'Black'}</div>
+        <div>Turn: {moveTurn === WHITE ? 'White' : 'Black'}</div>
       </div>
       <div className="map">
         {map.map((row, i) => (
