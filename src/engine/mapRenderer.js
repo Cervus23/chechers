@@ -1,6 +1,6 @@
 import { EMPTY_CELL, SEPARATOR } from './types';
 
-const start = [
+/*const start = [
   '...xxx...',
   '....x....',
   '....0....',
@@ -10,9 +10,22 @@ const start = [
   '....0....',
   '....x....',
   '...xxx...',
+];*/
+
+const start = [
+  '.........',
+  '.........',
+  '.........',
+  '.........',
+  '....M....',
+  'x........',
+  '.........',
+  '.........',
+  '.........',
 ];
 
-export const createMap = ({ height, width }) => start.map(row => row.split(''));
+export const createMap = ({ height, width }) =>
+  start.map((row) => row.split(''));
 
 export const createActivePath = ({ map, activeIndex }) => {
   const path = new Set();

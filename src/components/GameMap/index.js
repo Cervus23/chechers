@@ -1,9 +1,15 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { createActivePath, move } from '../../engine/mapRenderer';
-import { SEPARATOR, EMPTY_CELL, KING, WHITE_CHECKER, BLACK_CHECKER } from '../../engine/types';
-import { WHITE, BLACK } from '../../engine/turns'
-import { START_MOVE, SELECTED_CHECKER } from '../../engine/phases';
+import {
+  SEPARATOR,
+  EMPTY_CELL,
+  KING,
+  WHITE_CHECKER,
+  BLACK_CHECKER,
+} from '../../engine/types';
+import { WHITE, BLACK } from '../../engine/turns';
+import { START_MOVE, SELECTED_CHECKER } from '../../engine/movePhases';
 import './style.css';
 import CellElement from '../CellElement';
 import {
@@ -15,10 +21,13 @@ import {
   nextMoveTurn,
   setMap,
   setActivePath,
+  setKingIndex,
+  declareWin,
 } from '../../store/actions';
 
 const GameMap = ({
   phase,
+  gameStage,
   activeIndex,
   moveCounter,
   moveTurn,
@@ -28,10 +37,25 @@ const GameMap = ({
   reselectChecker,
   makeMove,
   selectChecker,
+  kingIndex,
+  winGame,
+  setKingPosition,
 }) => {
-  const isActive = ([i, j]) => (
-    (activeIndex[0] === i && activeIndex[1] === j) || activePath.has(`${i}${SEPARATOR}${j}`)
-  );
+  const isActive = ([i, j]) =>
+    (activeIndex[0] === i && activeIndex[1] === j) ||
+    activePath.has(`${i}${SEPARATOR}${j}`);
+
+  useEffect(() => {
+    if (
+      kingIndex[0] === 0 ||
+      kingIndex[0] === map[0].length - 1 ||
+      kingIndex[1] === 0 ||
+      kingIndex[1] === map.length - 1
+    ) {
+      winGame();
+    }
+  }, [kingIndex, map, winGame]);
+
   const onClickHandler = ([i, j]) => {
     // When clicked on an active checker - reset selection and go to the START_MOVE stage.
     if (activeIndex[0] === i && activeIndex[1] === j) {
@@ -71,6 +95,12 @@ const GameMap = ({
         return;
       }
 
+      const currentChecker = map[activeIndex[0]][activeIndex[1]];
+
+      if (currentChecker === KING) {
+        setKingPosition([i, j]);
+      }
+
       makeMove({ map, from: activeIndex, to: [i, j] });
 
       return;
@@ -84,7 +114,7 @@ const GameMap = ({
     // If another checker is reselected in the correct move turn.
     if (moveTurn === destination.side && phase === SELECTED_CHECKER) {
       reselectChecker({ map, activeIndex: [i, j] });
-      
+
       return;
     }
 
@@ -96,6 +126,7 @@ const GameMap = ({
       <div>
         <div>Move #{moveCounter + 1}</div>
         <div>Turn: {moveTurn === WHITE ? 'White' : 'Black'}</div>
+        <div> {gameStage}</div>
       </div>
       <div className="map">
         {map.map((row, i) => (
@@ -116,8 +147,19 @@ const GameMap = ({
   );
 };
 
-const mapStateToProps = ({ phase, activeIndex, moveCounter, moveTurn, map, activePath }) => ({
+const mapStateToProps = ({
   phase,
+  gameStage,
+  kingIndex,
+  activeIndex,
+  moveCounter,
+  moveTurn,
+  map,
+  activePath,
+}) => ({
+  phase,
+  gameStage,
+  kingIndex,
   activeIndex,
   moveCounter,
   moveTurn,
@@ -131,14 +173,6 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(
       setActivePath(
         createActivePath({ map: payload, activeIndex: [null, null] })
-      )
-    );
-  },
-  reselectChecker: ({ map, activeIndex }) => {
-    dispatch(setActiveIndex(activeIndex));
-    dispatch(
-      setActivePath(
-        createActivePath({ map, activeIndex })
       )
     );
   },
@@ -156,15 +190,21 @@ const mapDispatchToProps = (dispatch) => ({
       )
     );
   },
+  winGame: () => {
+    dispatch(declareWin());
+  },
+  reselectChecker: ({ map, activeIndex }) => {
+    dispatch(setActiveIndex(activeIndex));
+    dispatch(setActivePath(createActivePath({ map, activeIndex })));
+  },
   selectChecker: ({ map, activeIndex }) => {
     dispatch(nextPhase());
     dispatch(setActiveIndex(activeIndex));
-    dispatch(
-      setActivePath(
-        createActivePath({ map, activeIndex })
-      )
-    );
-  }
+    dispatch(setActivePath(createActivePath({ map, activeIndex })));
+  },
+  setKingPosition: ([i, j]) => {
+    dispatch(setKingIndex([i, j]));
+  },
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(GameMap);

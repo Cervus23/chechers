@@ -3,12 +3,16 @@ import {
   INCREMENT_MOVES,
   NEXT_PHASE,
   NEXT_TURN,
-  SET_ACTIVE_INDEX, SET_ACTIVE_PATH,
+  SET_ACTIVE_INDEX,
+  SET_ACTIVE_PATH,
   SET_MAP,
-  START_PHASE
+  START_PHASE,
+  SET_KING_INDEX,
+  DECLARE_WIN,
 } from './actions';
-import { START_MOVE, PHASES } from '../engine/phases';
+import { START_MOVE, PHASES } from '../engine/movePhases';
 import { WHITE, BLACK } from '../engine/turns';
+import { GAME, WIN } from '../engine/gameStage';
 import { createMap } from '../engine/mapRenderer';
 
 const mapParams = {
@@ -23,6 +27,8 @@ const initialState = {
   moveTurn: WHITE,
   map: createMap(mapParams),
   activePath: new Set(),
+  gameStage: GAME,
+  kingIndex: [4, 4],
 };
 
 const reducer = (state = initialState, { type, payload }) => {
@@ -46,6 +52,10 @@ const reducer = (state = initialState, { type, payload }) => {
       return { ...state, map: payload };
     case SET_ACTIVE_PATH:
       return { ...state, activePath: payload };
+    case SET_KING_INDEX:
+      return { ...state, kingIndex: payload };
+    case DECLARE_WIN:
+      return { ...state, gameStage: WIN };
     default:
       return { ...state };
   }
