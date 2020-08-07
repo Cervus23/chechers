@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
-import { createActivePath, move } from '../../engine/mapRenderer';
+import { createActivePath, beatChecker, move } from '../../engine/mapRenderer';
 import {
   SEPARATOR,
   EMPTY_CELL,
@@ -40,6 +40,7 @@ const GameMap = ({
   kingIndex,
   winGame,
   setKingPosition,
+  beatCheck,
 }) => {
   const isActive = ([i, j]) =>
     (activeIndex[0] === i && activeIndex[1] === j) ||
@@ -100,6 +101,7 @@ const GameMap = ({
       if (currentChecker === KING) {
         setKingPosition([i, j]);
       }
+      //beatCheck({ map, activeIndex });
 
       makeMove({ map, from: activeIndex, to: [i, j] });
 
@@ -117,7 +119,6 @@ const GameMap = ({
 
       return;
     }
-
     selectChecker({ map, activeIndex: [i, j] });
   };
 
@@ -204,6 +205,11 @@ const mapDispatchToProps = (dispatch) => ({
   },
   setKingPosition: ([i, j]) => {
     dispatch(setKingIndex([i, j]));
+  },
+  beatCheck: ({ map, activeIndex }) => {
+    const newMap = beatChecker({ map, activeIndex });
+
+    dispatch(setMap(newMap));
   },
 });
 

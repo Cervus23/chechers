@@ -1,28 +1,28 @@
 import { EMPTY_CELL, SEPARATOR } from './types';
 
-const start = [
-  '...xxx...',
-  '....x....',
-  '....0....',
-  'x...0...x',
-  'xx00M00xx',
-  'x...0...x',
-  '....0....',
-  '....x....',
-  '...xxx...',
-];
-
 // const start = [
-//   '.........',
-//   '.........',
-//   '.........',
-//   '.........',
-//   '....M....',
-//   'x........',
-//   '.........',
-//   '.........',
-//   '.........',
+//   '...xxx...',
+//   '....x....',
+//   '....0....',
+//   'x...0...x',
+//   'xx00M00xx',
+//   'x...0...x',
+//   '....0....',
+//   '....x....',
+//   '...xxx...',
 // ];
+
+const start = [
+  '.........',
+  '.........',
+  '.........',
+  '.........',
+  '....M....',
+  '0........',
+  'xx.......',
+  '00.......',
+  '.........',
+];
 
 export const createMap = ({ height, width }) =>
   start.map((row) => row.split(''));
@@ -71,6 +71,50 @@ export const createActivePath = ({ map, activeIndex }) => {
   }
 
   return path;
+};
+
+// export const beatChecker = ({ map, activeIndex }) => {
+//   const newMap = JSON.parse(JSON.stringify(map));
+//   const currentChecker = newMap[activeIndex[0]][activeIndex[1]];
+
+//   // Up to down check
+//   if (currentChecker !== newMap[activeIndex[0] + 1][activeIndex[1]]) {
+//     if (currentChecker === newMap[activeIndex[0] + 2][activeIndex[1]]) {
+//       newMap[activeIndex[0] + 1][activeIndex[1]] = EMPTY_CELL;
+//     }
+//   }
+//   return newMap;
+// };
+
+// export const beatChecker = ({ map, checkingIndex: [i, j] }) => {
+//   const newMap = JSON.parse(JSON.stringify(map));
+//   const currentChecker = newMap[i][j];
+
+//   // Up to down check
+//   if (currentChecker !== newMap[i + 1][j]) {
+//     if (currentChecker === newMap[i + 2][j]) {
+//       newMap[i + 1][j] = EMPTY_CELL;
+//     }
+//   }
+//   return newMap;
+// };
+
+export const beatChecker = ({ map, activeIndex }) => {
+  const newMap = JSON.parse(JSON.stringify(map));
+  const currentChecker = newMap[activeIndex[0]][activeIndex[1]];
+  console.log(currentChecker);
+  // Up to down check
+  if (currentChecker !== newMap[activeIndex[0] + 1][activeIndex[1]]) {
+    console.log('here first');
+    console.log(currentChecker);
+
+    if (currentChecker === newMap[activeIndex[0] + 2][activeIndex[1]]) {
+      console.log('here second');
+
+      newMap[activeIndex[0] + 1][activeIndex[1]] = EMPTY_CELL;
+    }
+  }
+  return newMap;
 };
 
 export const move = ({ map, from, to }) => {
