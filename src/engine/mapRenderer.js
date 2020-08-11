@@ -17,9 +17,9 @@ const start = [
 //   '.........',
 //   '.........',
 //   '.........',
+//   '....M0M..',
+//   '.....x0..',
 //   '....M....',
-//   '.........',
-//   '.........',
 //   '...0.....',
 //   '0xx......',
 // ];
@@ -73,31 +73,32 @@ export const createActivePath = ({ map, activeIndex }) => {
   return path;
 };
 
-export const renderMap = ({ map, fn }) => {
-  const newMap = fn(JSON.parse(JSON.stringify(map)));
-
-  return newMap;
-};
-
-// export const beatChecker = ({ map, activeIndex, movingIndex }) => {
-//   const newMap = JSON.parse(JSON.stringify(map));
-//   const currentChecker = newMap[activeIndex[0]][activeIndex[1]];
-//   // Up to down check
-//   if (currentChecker !== newMap[movingIndex[0] + 1][movingIndex[1]]) {
-//     console.log('here first');
-
-//     if (currentChecker === newMap[movingIndex[0] + 2][movingIndex[1]]) {
-//       console.log('here second');
-
-//       newMap[movingIndex[0] + 1][movingIndex[1]] = EMPTY_CELL;
-//     }
-//   }
-//   return newMap;
-// };
-
 export const move = ({ map, from, to }) => {
   const newMap = JSON.parse(JSON.stringify(map));
   const currentChecker = newMap[from[0]][from[1]];
+
+  const getSide = (position) => {
+    const checker = {
+      type: position,
+      side: null,
+    };
+
+    switch (checker.type) {
+      case '0':
+        checker.side = 'white';
+        break;
+      case 'M':
+        checker.side = 'white';
+        break;
+      case 'x':
+        checker.side = 'black';
+        break;
+      default:
+        checker.side = null;
+    }
+
+    return checker.side;
+  };
 
   newMap[from[0]][from[1]] = EMPTY_CELL;
   newMap[to[0]][to[1]] = map[from[0]][from[1]];
@@ -105,8 +106,8 @@ export const move = ({ map, from, to }) => {
   // Up to down check
   if (to[0] + 1 < newMap.length && to[0] + 2 < newMap.length) {
     if (
-      currentChecker !== newMap[to[0] + 1][to[1]] &&
-      currentChecker === newMap[to[0] + 2][to[1]]
+      getSide(currentChecker) !== getSide(newMap[to[0] + 1][to[1]]) &&
+      getSide(currentChecker) === getSide(newMap[to[0] + 2][to[1]])
     ) {
       newMap[to[0] + 1][to[1]] = EMPTY_CELL;
     }
@@ -115,8 +116,8 @@ export const move = ({ map, from, to }) => {
   // Down to up check
   if (to[0] - 1 > 0 && to[0] - 2 > 0) {
     if (
-      currentChecker !== newMap[to[0] - 1][to[1]] &&
-      currentChecker === newMap[to[0] - 2][to[1]]
+      getSide(currentChecker) !== getSide(newMap[to[0] - 1][to[1]]) &&
+      getSide(currentChecker) === getSide(newMap[to[0] - 2][to[1]])
     ) {
       newMap[to[0] - 1][to[1]] = EMPTY_CELL;
     }
@@ -125,8 +126,8 @@ export const move = ({ map, from, to }) => {
   // Left to right check
   if (to[1] + 1 < newMap.length && to[1] + 2 < newMap.length) {
     if (
-      currentChecker !== newMap[to[0]][to[1] + 1] &&
-      currentChecker === newMap[to[0]][to[1] + 2]
+      getSide(currentChecker) !== getSide(newMap[to[0]][to[1] + 1]) &&
+      getSide(currentChecker) === getSide(newMap[to[0]][to[1] + 2])
     ) {
       newMap[to[0]][to[1] + 1] = EMPTY_CELL;
     }
@@ -135,8 +136,8 @@ export const move = ({ map, from, to }) => {
   // Right to left check
   if (to[1] - 1 > 0 && to[1] - 2 > 0) {
     if (
-      currentChecker !== newMap[to[0]][to[1] - 1] &&
-      currentChecker === newMap[to[0]][to[1] - 2]
+      getSide(currentChecker) !== getSide(newMap[to[0]][to[1] - 1]) &&
+      getSide(currentChecker) === getSide(newMap[to[0]][to[1] - 2])
     ) {
       newMap[to[0]][to[1] - 1] = EMPTY_CELL;
     }

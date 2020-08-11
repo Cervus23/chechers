@@ -40,7 +40,6 @@ const GameMap = ({
   kingIndex,
   winGame,
   setKingPosition,
-  // beatCheck,
 }) => {
   const isActive = ([i, j]) =>
     (activeIndex[0] === i && activeIndex[1] === j) ||
@@ -102,7 +101,6 @@ const GameMap = ({
         setKingPosition([i, j]);
       }
 
-      // beatCheck({ map, activeIndex, movingIndex: [i, j] });
       makeMove({ map, from: activeIndex, to: [i, j] });
 
       return;
@@ -206,11 +204,6 @@ const mapDispatchToProps = (dispatch) => ({
   setKingPosition: ([i, j]) => {
     dispatch(setKingIndex([i, j]));
   },
-  // beatCheck: ({ map, activeIndex, movingIndex }) => {
-  //   const newMap = beatChecker({ map, activeIndex, movingIndex });
-
-  //   dispatch(setMap(newMap));
-  // },
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(GameMap);
