@@ -15,13 +15,13 @@ const start = [
 // const start = [
 //   '.........',
 //   '.........',
+//   '....MM...',
 //   '.........',
+//   '..M...M..',
 //   '.........',
-//   '....M0M..',
-//   '.....x0..',
 //   '....M....',
-//   '...0.....',
-//   '0xx......',
+//   '.........',
+//   '..x......',
 // ];
 
 export const createMap = ({ height, width }) =>
@@ -36,7 +36,10 @@ export const createActivePath = ({ map, activeIndex }) => {
 
   // Down
   for (let i = activeIndex[0] + 1; i < map.length; i++) {
-    if (map[i][activeIndex[1]] !== EMPTY_CELL) {
+    if (
+      map[i][activeIndex[1]] !== EMPTY_CELL ||
+      (i === 4 && activeIndex[1] === 4 && map[4][4] === EMPTY_CELL)
+    ) {
       break;
     }
 
@@ -45,7 +48,10 @@ export const createActivePath = ({ map, activeIndex }) => {
 
   // Up
   for (let i = activeIndex[0] - 1; i >= 0; i--) {
-    if (map[i][activeIndex[1]] !== EMPTY_CELL) {
+    if (
+      map[i][activeIndex[1]] !== EMPTY_CELL ||
+      (i === 4 && activeIndex[1] === 4 && map[4][4] === EMPTY_CELL)
+    ) {
       break;
     }
 
@@ -54,7 +60,10 @@ export const createActivePath = ({ map, activeIndex }) => {
 
   // Right
   for (let i = activeIndex[1] + 1; i < map[0].length; i++) {
-    if (map[activeIndex[0]][i] !== EMPTY_CELL) {
+    if (
+      map[activeIndex[0]][i] !== EMPTY_CELL ||
+      (i === 4 && activeIndex[0] === 4 && map[4][4] === EMPTY_CELL)
+    ) {
       break;
     }
 
@@ -63,13 +72,15 @@ export const createActivePath = ({ map, activeIndex }) => {
 
   // Left
   for (let i = activeIndex[1] - 1; i >= 0; i--) {
-    if (map[activeIndex[0]][i] !== EMPTY_CELL) {
+    if (
+      map[activeIndex[0]][i] !== EMPTY_CELL ||
+      (i === 4 && activeIndex[0] === 4 && map[4][4] === EMPTY_CELL)
+    ) {
       break;
     }
 
     path.add(`${activeIndex[0]}${SEPARATOR}${i}`);
   }
-
   return path;
 };
 
@@ -114,7 +125,7 @@ export const move = ({ map, from, to }) => {
   }
 
   // Down to up check
-  if (to[0] - 1 > 0 && to[0] - 2 > 0) {
+  if (to[0] - 1 > 0 && to[0] - 2 >= 0) {
     if (
       getSide(currentChecker) !== getSide(newMap[to[0] - 1][to[1]]) &&
       getSide(currentChecker) === getSide(newMap[to[0] - 2][to[1]])
@@ -134,7 +145,7 @@ export const move = ({ map, from, to }) => {
   }
 
   // Right to left check
-  if (to[1] - 1 > 0 && to[1] - 2 > 0) {
+  if (to[1] - 1 > 0 && to[1] - 2 >= 0) {
     if (
       getSide(currentChecker) !== getSide(newMap[to[0]][to[1] - 1]) &&
       getSide(currentChecker) === getSide(newMap[to[0]][to[1] - 2])
