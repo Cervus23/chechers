@@ -1,4 +1,5 @@
-import { EMPTY_CELL, SEPARATOR } from './types';
+import { BLACK_CHECKER, EMPTY_CELL, KING, SEPARATOR, WHITE_CHECKER } from './types';
+import { BLACK, WHITE } from './turns';
 
 const start = [
   '...xxx...',
@@ -84,32 +85,23 @@ export const createActivePath = ({ map, activeIndex }) => {
   return path;
 };
 
+const getSide = (position) => {
+  switch (position) {
+    case WHITE_CHECKER:
+      return WHITE;
+    case KING:
+      return WHITE;
+    case BLACK_CHECKER:
+      return BLACK;
+    default:
+      return null;
+  }
+};
+
 export const move = ({ map, from, to }) => {
   const newMap = JSON.parse(JSON.stringify(map));
   const currentChecker = newMap[from[0]][from[1]];
-
-  const getSide = (position) => {
-    const checker = {
-      type: position,
-      side: null,
-    };
-
-    switch (checker.type) {
-      case '0':
-        checker.side = 'white';
-        break;
-      case 'M':
-        checker.side = 'white';
-        break;
-      case 'x':
-        checker.side = 'black';
-        break;
-      default:
-        checker.side = null;
-    }
-
-    return checker.side;
-  };
+  const currCheckerSide = getSide(currentChecker);
 
   newMap[from[0]][from[1]] = EMPTY_CELL;
   newMap[to[0]][to[1]] = map[from[0]][from[1]];
@@ -117,8 +109,8 @@ export const move = ({ map, from, to }) => {
   // Up to down check
   if (to[0] + 1 < newMap.length && to[0] + 2 < newMap.length) {
     if (
-      getSide(currentChecker) !== getSide(newMap[to[0] + 1][to[1]]) &&
-      getSide(currentChecker) === getSide(newMap[to[0] + 2][to[1]])
+      currCheckerSide !== getSide(newMap[to[0] + 1][to[1]]) &&
+      currCheckerSide === getSide(newMap[to[0] + 2][to[1]])
     ) {
       newMap[to[0] + 1][to[1]] = EMPTY_CELL;
     }
@@ -127,8 +119,8 @@ export const move = ({ map, from, to }) => {
   // Down to up check
   if (to[0] - 1 > 0 && to[0] - 2 >= 0) {
     if (
-      getSide(currentChecker) !== getSide(newMap[to[0] - 1][to[1]]) &&
-      getSide(currentChecker) === getSide(newMap[to[0] - 2][to[1]])
+      currCheckerSide !== getSide(newMap[to[0] - 1][to[1]]) &&
+      currCheckerSide === getSide(newMap[to[0] - 2][to[1]])
     ) {
       newMap[to[0] - 1][to[1]] = EMPTY_CELL;
     }
@@ -137,8 +129,8 @@ export const move = ({ map, from, to }) => {
   // Left to right check
   if (to[1] + 1 < newMap.length && to[1] + 2 < newMap.length) {
     if (
-      getSide(currentChecker) !== getSide(newMap[to[0]][to[1] + 1]) &&
-      getSide(currentChecker) === getSide(newMap[to[0]][to[1] + 2])
+      currCheckerSide !== getSide(newMap[to[0]][to[1] + 1]) &&
+      currCheckerSide === getSide(newMap[to[0]][to[1] + 2])
     ) {
       newMap[to[0]][to[1] + 1] = EMPTY_CELL;
     }
@@ -147,8 +139,8 @@ export const move = ({ map, from, to }) => {
   // Right to left check
   if (to[1] - 1 > 0 && to[1] - 2 >= 0) {
     if (
-      getSide(currentChecker) !== getSide(newMap[to[0]][to[1] - 1]) &&
-      getSide(currentChecker) === getSide(newMap[to[0]][to[1] - 2])
+      currCheckerSide !== getSide(newMap[to[0]][to[1] - 1]) &&
+      currCheckerSide === getSide(newMap[to[0]][to[1] - 2])
     ) {
       newMap[to[0]][to[1] - 1] = EMPTY_CELL;
     }
