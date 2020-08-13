@@ -1,21 +1,25 @@
 .main-container {
-    margin-top: 100px;
+  margin-top: 100px;
 }
 
 .map {
-    margin-top: 30px;
+  margin-top: 30px;
 }
 
 .cell {
-    vertical-align: top;
-    width: 50px;
-    height: 50px;
-    display: inline-block;
-    border: 2px solid rgba(255, 0, 0, 0.13);
-    padding: 2px;
+  vertical-align: top;
+  width: 50px;
+  height: 50px;
+  display: inline-block;
+  border: 2px solid rgba(255, 0, 0, 0.13);
+  padding: 2px;
 }
 
 .cell.active {
-    border: 2px solid rgb(0, 255, 136);
-    cursor: pointer;
+  border: 2px solid rgb(0, 255, 136);
+  cursor: pointer;
+}
+
+.cell.center {
+  background-color: rgba(160, 0, 0, 0.3);
 }

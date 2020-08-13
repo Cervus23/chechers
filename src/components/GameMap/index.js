@@ -45,6 +45,13 @@ const GameMap = ({
     (activeIndex[0] === i && activeIndex[1] === j) ||
     activePath.has(`${i}${SEPARATOR}${j}`);
 
+  const isCenter = ([i, j]) => {
+    const centerRow = (map[0].length - 1) / 2;
+    const centerCol = (map[1].length - 1) / 2;
+
+    return i === centerRow && j === centerCol;
+  };
+
   useEffect(() => {
     if (
       kingIndex[0] === 0 ||
@@ -133,7 +140,11 @@ const GameMap = ({
             {row.map((symbol, j) => (
               <div
                 onClick={() => onClickHandler([i, j])}
-                className={'cell' + (isActive([i, j]) ? ' active' : '')}
+                className={
+                  'cell' +
+                  (isActive([i, j]) ? ' active' : '') +
+                  (isCenter([i, j]) ? ' center' : '')
+                }
                 key={j}
               >
                 <CellElement symbol={symbol} isActive={isActive([i, j])} />
