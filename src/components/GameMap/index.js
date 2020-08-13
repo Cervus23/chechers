@@ -10,6 +10,7 @@ import {
 } from '../../engine/types';
 import { WHITE, BLACK } from '../../engine/turns';
 import { START_MOVE, SELECTED_CHECKER } from '../../engine/movePhases';
+import { WIN } from '../../engine/gameStage';
 import './style.css';
 import CellElement from '../CellElement';
 import {
@@ -23,6 +24,7 @@ import {
   setActivePath,
   setKingIndex,
   declareWin,
+  resetGameMap,
 } from '../../store/actions';
 
 const GameMap = ({
@@ -40,6 +42,7 @@ const GameMap = ({
   kingIndex,
   winGame,
   setKingPosition,
+  restartGame,
 }) => {
   const isActive = ([i, j]) =>
     (activeIndex[0] === i && activeIndex[1] === j) ||
@@ -65,8 +68,13 @@ const GameMap = ({
   }, [kingIndex, map, winGame]);
 
   const onClickHandler = ([i, j]) => {
-    // When clicked on an active checker - reset selection and go to the START_MOVE stage.
+    // Ignore clicks when WIN stage
+    if (gameStage === WIN) {
+      return;
+    }
+
     if (activeIndex[0] === i && activeIndex[1] === j) {
+      // When clicked on an active checker - reset selection and go to the START_MOVE stage.
       toStartMove();
 
       return;
@@ -134,11 +142,17 @@ const GameMap = ({
       <div>
         <div>Move #{moveCounter + 1}</div>
         <div>Turn: {moveTurn === WHITE ? 'White' : 'Black'}</div>
-        <div className={gameStage === 'WIN' ? ' win' : ''}>
-          {gameStage === 'WIN'
+        <div className={gameStage === WIN ? ' win' : ''}>
+          {gameStage === WIN
             ? `WIN of ${moveTurn === WHITE ? BLACK : WHITE}`
             : ''}
         </div>
+        <button
+          hidden={gameStage === WIN ? '' : 'hidden'}
+          onClick={() => restartGame()}
+        >
+          Restart
+        </button>
       </div>
       <div className="map">
         {map.map((row, i) => (
@@ -220,6 +234,9 @@ const mapDispatchToProps = (dispatch) => ({
   },
   setKingPosition: ([i, j]) => {
     dispatch(setKingIndex([i, j]));
+  },
+  restartGame: () => {
+    dispatch(resetGameMap());
   },
 });
 

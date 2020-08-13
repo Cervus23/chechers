@@ -8,6 +8,7 @@ export const SET_MAP = 'SET_MAP';
 export const SET_ACTIVE_PATH = 'SET_ACTIVE_PATH';
 export const SET_KING_INDEX = 'SET_KING_INDEX';
 export const DECLARE_WIN = 'DECLARE_WIN';
+export const RESET_GAME_MAP = 'RESET_GAME_MAP';
 
 export const nextPhase = () => ({ type: NEXT_PHASE });
 export const startPhase = () => ({ type: START_PHASE });
@@ -22,3 +23,4 @@ export const setMap = (payload) => ({ type: SET_MAP, payload });
 export const setActivePath = (payload) => ({ type: SET_ACTIVE_PATH, payload });
 export const setKingIndex = (payload) => ({ type: SET_KING_INDEX, payload });
 export const declareWin = () => ({ type: DECLARE_WIN });
+export const resetGameMap = () => ({ type: RESET_GAME_MAP });

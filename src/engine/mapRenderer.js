@@ -34,10 +34,11 @@ const start = [
 export const createMap = ({ height, width }) =>
   start.map((row) => row.split(''));
 
+const centerRow = 4;
+const centerCol = 4;
+
 export const createActivePath = ({ map, activeIndex }) => {
   const path = new Set();
-  const centerRow = (map[0].length - 1) / 2;
-  const centerCol = (map[1].length - 1) / 2;
 
   if (activeIndex[0] === null || activeIndex[1] === null) {
     return path;

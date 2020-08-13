@@ -9,6 +9,7 @@ import {
   START_PHASE,
   SET_KING_INDEX,
   DECLARE_WIN,
+  RESET_GAME_MAP,
 } from './actions';
 import { START_MOVE, PHASES } from '../engine/movePhases';
 import { WHITE, BLACK } from '../engine/turns';
@@ -58,6 +59,8 @@ const reducer = (state = initialState, { type, payload }) => {
       return { ...state, kingIndex: payload };
     case DECLARE_WIN:
       return { ...state, gameStage: WIN };
+    case RESET_GAME_MAP:
+      return { ...initialState };
     default:
       return { ...state };
   }
