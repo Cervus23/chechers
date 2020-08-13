@@ -124,6 +124,7 @@ const GameMap = ({
 
       return;
     }
+
     selectChecker({ map, activeIndex: [i, j] });
   };
 
@@ -132,7 +133,7 @@ const GameMap = ({
       <div>
         <div>Move #{moveCounter + 1}</div>
         <div>Turn: {moveTurn === WHITE ? 'White' : 'Black'}</div>
-        <div> {gameStage}</div>
+        <div>{gameStage}</div>
       </div>
       <div className="map">
         {map.map((row, i) => (
