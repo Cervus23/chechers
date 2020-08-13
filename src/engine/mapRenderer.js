@@ -1,4 +1,10 @@
-import { BLACK_CHECKER, EMPTY_CELL, KING, SEPARATOR, WHITE_CHECKER } from './types';
+import {
+  BLACK_CHECKER,
+  EMPTY_CELL,
+  KING,
+  SEPARATOR,
+  WHITE_CHECKER,
+} from './types';
 import { BLACK, WHITE } from './turns';
 
 // const start = [
@@ -18,11 +24,11 @@ const start = [
   '.........',
   '.........',
   '.........',
-  '....M....',
+  '...xM....',
+  '.....x...',
   '.........',
-  '..0......',
-  '...x.....',
-  '...0.....',
+  '....0....',
+  '.........',
 ];
 
 export const createMap = ({ height, width }) =>
@@ -30,6 +36,8 @@ export const createMap = ({ height, width }) =>
 
 export const createActivePath = ({ map, activeIndex }) => {
   const path = new Set();
+  const centerRow = (map[0].length - 1) / 2;
+  const centerCol = (map[1].length - 1) / 2;
 
   if (activeIndex[0] === null || activeIndex[1] === null) {
     return path;
@@ -39,7 +47,9 @@ export const createActivePath = ({ map, activeIndex }) => {
   for (let i = activeIndex[0] + 1; i < map.length; i++) {
     if (
       map[i][activeIndex[1]] !== EMPTY_CELL ||
-      (i === 4 && activeIndex[1] === 4 && map[4][4] === EMPTY_CELL)
+      (i === centerRow &&
+        activeIndex[1] === centerCol &&
+        map[centerRow][centerCol] === EMPTY_CELL)
     ) {
       break;
     }
@@ -51,7 +61,9 @@ export const createActivePath = ({ map, activeIndex }) => {
   for (let i = activeIndex[0] - 1; i >= 0; i--) {
     if (
       map[i][activeIndex[1]] !== EMPTY_CELL ||
-      (i === 4 && activeIndex[1] === 4 && map[4][4] === EMPTY_CELL)
+      (i === centerRow &&
+        activeIndex[1] === centerCol &&
+        map[centerRow][centerCol] === EMPTY_CELL)
     ) {
       break;
     }
@@ -63,7 +75,9 @@ export const createActivePath = ({ map, activeIndex }) => {
   for (let i = activeIndex[1] + 1; i < map[0].length; i++) {
     if (
       map[activeIndex[0]][i] !== EMPTY_CELL ||
-      (i === 4 && activeIndex[0] === 4 && map[4][4] === EMPTY_CELL)
+      (i === centerCol &&
+        activeIndex[0] === centerRow &&
+        map[centerRow][centerCol] === EMPTY_CELL)
     ) {
       break;
     }
@@ -75,7 +89,9 @@ export const createActivePath = ({ map, activeIndex }) => {
   for (let i = activeIndex[1] - 1; i >= 0; i--) {
     if (
       map[activeIndex[0]][i] !== EMPTY_CELL ||
-      (i === 4 && activeIndex[0] === 4 && map[4][4] === EMPTY_CELL)
+      (i === centerCol &&
+        activeIndex[0] === centerRow &&
+        map[centerRow][centerCol] === EMPTY_CELL)
     ) {
       break;
     }

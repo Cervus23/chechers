@@ -61,6 +61,7 @@ const GameMap = ({
     ) {
       winGame();
     }
+    if (map[kingIndex[0]][kingIndex[1]] === EMPTY_CELL) winGame();
   }, [kingIndex, map, winGame]);
 
   const onClickHandler = ([i, j]) => {
@@ -133,7 +134,11 @@ const GameMap = ({
       <div>
         <div>Move #{moveCounter + 1}</div>
         <div>Turn: {moveTurn === WHITE ? 'White' : 'Black'}</div>
-        <div>{gameStage}</div>
+        <div className={gameStage === 'WIN' ? ' win' : ''}>
+          {gameStage === 'WIN'
+            ? `WIN of ${moveTurn === WHITE ? BLACK : WHITE}`
+            : ''}
+        </div>
       </div>
       <div className="map">
         {map.map((row, i) => (

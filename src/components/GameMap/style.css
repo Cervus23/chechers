@@ -23,3 +23,8 @@
 .cell.center {
   background-color: rgba(160, 0, 0, 0.3);
 }
+
+.win {
+  font-size: 30px;
+  color: red;
+}

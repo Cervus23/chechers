@@ -19,6 +19,8 @@ const mapParams = {
   width: 9,
   height: 9,
 };
+const centerRow = (mapParams.width - 1) / 2;
+const centerCol = (mapParams.height - 1) / 2;
 const initialState = {
   mapParams,
   phase: START_MOVE,
@@ -28,7 +30,7 @@ const initialState = {
   map: createMap(mapParams),
   activePath: new Set(),
   gameStage: GAME,
-  kingIndex: [4, 4],
+  kingIndex: [centerRow, centerCol],
 };
 
 const reducer = (state = initialState, { type, payload }) => {
