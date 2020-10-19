@@ -144,7 +144,7 @@ const GameMap = ({
         <div>Turn: {moveTurn === WHITE ? 'White' : 'Black'}</div>
         <div className={gameStage === WIN ? ' win' : ''}>
           {gameStage === WIN
-            ? `WIN of ${moveTurn === WHITE ? BLACK : WHITE}`
+            ? `Win of ${moveTurn === WHITE ? 'Attackers' : 'Defenders'}`
             : ''}
         </div>
         <button
